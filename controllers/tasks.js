@@ -12,7 +12,7 @@ const createTask = asyncWrapper(async (req, res) => {
   res.status(201).json({ task });
 });
 
-const getTask = asyncWrapper(async (req, res) => {
+const getTask = asyncWrapper(async (req, res, next) => {
   const { id: taskID } = req.params;
   const task = await Task.findOne({ _id: taskID });
   if (!task) {
@@ -21,7 +21,7 @@ const getTask = asyncWrapper(async (req, res) => {
   res.status(200).json({ task });
 });
 
-const updateTask = asyncWrapper(async (req, res) => {
+const updateTask = asyncWrapper(async (req, res, next) => {
   const { id: taskID } = req.params;
   const task = await Task.findOneAndUpdate({ _id: taskID }, req.body, {
     new: true,
