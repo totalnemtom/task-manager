@@ -5,6 +5,7 @@ const tasks = require("./routes/tasks");
 const connectDB = require("./db/connect");
 const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
+const Logger = require("./winston/logger");
 
 //middlewares
 app.use(express.static("./public"));
@@ -21,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
-    app.listen(PORT, console.log(`app is listening on port ${PORT}`));
+    app.listen(PORT, Logger.log("info", `app is listening on port ${PORT}`));
   } catch (error) {
     console.log(error);
   }
