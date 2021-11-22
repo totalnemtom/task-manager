@@ -72,7 +72,7 @@ const postUser = asyncWrapper(async (req, res, next) => {
 });
 
 const getUser = asyncWrapper(async (res, req, next) => {
-  console.log(req.body);
+  console.log(JSON.stringify(req));
   const { email, password } = req.body;
 
   if (!(email && password)) {

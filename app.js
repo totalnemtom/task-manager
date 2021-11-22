@@ -6,10 +6,12 @@ const connectDB = require("./db/connect");
 const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
 const Logger = require("./winston/logger");
+const morganMiddleware = require("./middleware/morgan");
+const cors = require("cors");
 
 //middlewares
+app.use(morganMiddleware);
 app.use(express.static("./public"));
-app.use(express.json());
 
 //routes
 app.use("/api/v1/tasks", routes);
