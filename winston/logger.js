@@ -35,10 +35,18 @@ const format = winston.format.combine(
 const transports = [
   new winston.transports.Console(),
   new winston.transports.File({
-    filename: "logs/error.log",
+    filename: `logs/error.log`,
     level: "error",
+    datePattern: "YYYY-MM-DD-HH",
+    maxSize: "20m",
+    maxFiles: "14d",
   }),
-  new winston.transports.File({ filename: "logs/all.log" }),
+  new winston.transports.File({
+    filename: `logs/combined.log`,
+    datePattern: "YYYY-MM-DD-HH",
+    maxSize: "20m",
+    maxFiles: "14d",
+  }),
 ];
 
 const Logger = winston.createLogger({

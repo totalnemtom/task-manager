@@ -1,14 +1,16 @@
 const Task = require("../models/task");
 const asyncWrapper = require("../middleware/async");
+const Logger = require("../winston/logger");
 const { createCustomError } = require("../errors/custom-errors");
 const Logger = require("../winston/logger");
+const httpStatusCodes = require("../errors/status-codes");
 
-const getAllTasks = asyncWrapper(async (req, res) => {
+const getAllTasks = asyncWrapper(async (req, res, next) => {
   const tasks = await Task.find();
   res.status(200).json({ tasks });
 });
 
-const createTask = asyncWrapper(async (req, res) => {
+const createTask = asyncWrapper(async (req, res, next) => {
   const task = await Task.create(req.body);
   res.status(201).json({ task });
 });
@@ -20,7 +22,7 @@ const getTask = asyncWrapper(async (req, res, next) => {
     return next(
       createCustomError(
         "not found error",
-        404,
+        httpStatusCodes.NOT_FOUND,
         true,
         `No task with id: ${taskID}`
       ),
@@ -40,7 +42,7 @@ const updateTask = asyncWrapper(async (req, res, next) => {
     return next(
       createCustomError(
         "not found error",
-        404,
+        httpStatusCodes.NOT_FOUND,
         true,
         `No task with id: ${taskID}`
       ),
@@ -57,7 +59,7 @@ const deleteTask = asyncWrapper(async (req, res, next) => {
     return next(
       createCustomError(
         "not found error",
-        404,
+        httpStatusCodes.NOT_FOUND,
         true,
         `No task with id: ${taskID}`
       ),
