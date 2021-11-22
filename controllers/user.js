@@ -5,6 +5,7 @@ const { createCustomError } = require("../errors/custom-errors");
 const httpStatusCodes = require("../errors/status-codes");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const bcryptjs = require("bcryptjs");
 
 const postUser = asyncWrapper(async (req, res, next) => {
   const { firstName, lastName, username, email, password } = req.body;
@@ -70,6 +71,42 @@ const postUser = asyncWrapper(async (req, res, next) => {
   res.status(201).json(user);
 });
 
+const getUser = asyncWrapper(async (res, req, next) => {
+  console.log(req.body);
+  const { email, password } = req.body;
+
+  if (!(email && password)) {
+    next(
+      createCustomError(
+        "all data must be provided!",
+        httpStatusCodes.BAD_REQUEST,
+        true,
+        "Please provide all data!"
+      ),
+      Logger.log("error", "all data must be provided!")
+    );
+  }
+
+  const user = await User.findOne({ email });
+
+  if (email && (await bcrypt.compare(password, user.password))) {
+    const token = jwt.sign(
+      { user_id: user._id, email },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "2h",
+      }
+    );
+
+    user.token = token;
+
+    res.status(200).json(user);
+  }
+
+  res.status(400).send("Invalid Credentials");
+});
+
 module.exports = {
   postUser,
+  getUser,
 };
