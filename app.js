@@ -7,11 +7,14 @@ const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
 const Logger = require("./winston/logger");
 const morganMiddleware = require("./middleware/morgan");
-const cors = require("cors");
+const bodyParser = require("body-parser");
 
 //middlewares
 app.use(morganMiddleware);
 app.use(express.static("./public"));
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //routes
 app.use("/api/v1/tasks", routes);

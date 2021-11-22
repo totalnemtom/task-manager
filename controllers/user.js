@@ -1,11 +1,10 @@
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../middleware/async");
 const Logger = require("../winston/logger");
 const { createCustomError } = require("../errors/custom-errors");
 const httpStatusCodes = require("../errors/status-codes");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const bcryptjs = require("bcryptjs");
 
 const postUser = asyncWrapper(async (req, res, next) => {
   const { firstName, lastName, username, email, password } = req.body;
@@ -71,8 +70,7 @@ const postUser = asyncWrapper(async (req, res, next) => {
   res.status(201).json(user);
 });
 
-const getUser = asyncWrapper(async (res, req, next) => {
-  console.log(JSON.stringify(req));
+const getUser = asyncWrapper(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!(email && password)) {
@@ -101,9 +99,10 @@ const getUser = asyncWrapper(async (res, req, next) => {
     user.token = token;
 
     res.status(200).json(user);
+    return;
   }
 
-  res.status(400).send("Invalid Credentials");
+  res.status(401).send("Invalid Credentials");
 });
 
 module.exports = {
