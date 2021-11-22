@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 
+var validateEmail = function (email) {
+  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email);
+};
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -30,10 +35,5 @@ const userSchema = new mongoose.Schema({
   },
   token: { type: String },
 });
-
-var validateEmail = function (email) {
-  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  return re.test(email);
-};
 
 module.exports = mongoose.model("user", userSchema);

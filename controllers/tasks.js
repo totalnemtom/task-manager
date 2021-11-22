@@ -2,7 +2,6 @@ const Task = require("../models/task");
 const asyncWrapper = require("../middleware/async");
 const Logger = require("../winston/logger");
 const { createCustomError } = require("../errors/custom-errors");
-const Logger = require("../winston/logger");
 const httpStatusCodes = require("../errors/status-codes");
 
 const getAllTasks = asyncWrapper(async (req, res, next) => {
