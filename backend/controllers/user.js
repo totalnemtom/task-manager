@@ -1,10 +1,10 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
-const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../middleware/async");
 const Logger = require("../winston/logger");
 const { createCustomError } = require("../errors/custom-errors");
 const httpStatusCodes = require("../errors/status-codes");
+const { signToken } = require("../lib/token/token");
 
 const postUser = asyncWrapper(async (req, res, next) => {
   const { firstName, lastName, username, email, password } = req.body;
@@ -45,13 +45,7 @@ const postUser = asyncWrapper(async (req, res, next) => {
     password: encryptedPassword,
   });
 
-  const token = jwt.sign(
-    { user_id: user._id, email },
-    process.env.JWT_SECRET_KEY,
-    {
-      expiresIn: "2h",
-    }
-  );
+  const token = signToken(user);
 
   if (!token) {
     next(
@@ -67,7 +61,7 @@ const postUser = asyncWrapper(async (req, res, next) => {
 
   user.token = token;
 
-  res.status(201).json(user);
+  return res.status(201).json(user);
 });
 
 const getUser = asyncWrapper(async (req, res, next) => {
@@ -88,18 +82,11 @@ const getUser = asyncWrapper(async (req, res, next) => {
   const user = await User.findOne({ email });
 
   if (email && (await bcrypt.compare(password, user.password))) {
-    const token = jwt.sign(
-      { user_id: user._id, email },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: "2h",
-      }
-    );
+    const token = signToken(user);
 
     user.token = token;
 
-    res.status(200).json(user);
-    return;
+    return res.status(200).json(user);
   }
 
   res.status(401).send("Invalid Credentials");
