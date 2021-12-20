@@ -1,11 +1,11 @@
 require("dotenv").config();
+const connectDB = require("./db/connect");
+const Logger = require("./winston/logger");
 const express = require("express");
 const app = express();
 const routes = require("./routes/routes");
-const connectDB = require("./db/connect");
 const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
-const Logger = require("./winston/logger");
 const morganMiddleware = require("./middleware/morgan");
 const bodyParser = require("body-parser");
 

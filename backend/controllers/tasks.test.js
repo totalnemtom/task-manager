@@ -9,8 +9,10 @@ let req, res, next;
 beforeEach(() => {
   req = httpMocks.createRequest();
   res = httpMocks.createResponse();
-  next = null;
+  next = jest.fn();
 });
+
+//describe("TaskSchema.getAllTasks", async () => {});
 
 describe("TaskController.createTask", () => {
   beforeEach(() => {
@@ -27,7 +29,6 @@ describe("TaskController.createTask", () => {
   it("should return 201 response code", async () => {
     req.body = newTask;
     await TaskController.createTask(req, res, next);
-    console.log(res._isEndCalled());
     expect(res.statusCode).toBe(201);
     expect(res._isEndCalled()).toBeTruthy();
   });
@@ -35,5 +36,12 @@ describe("TaskController.createTask", () => {
     TaskSchema.create.mockReturnValue(newTask);
     await TaskController.createTask(req, res, next);
     expect(res._getJSONData()).toStrictEqual({ newTask });
+  });
+  it("should handle error", async () => {
+    const errMessage = { message: "missing properties" };
+    const rejectedPromise = Promise.reject(errMessage);
+    TaskSchema.create.mockReturnValue(rejectedPromise);
+    await TaskController.createTask(req, res, next);
+    expect(next).toBeCalledWith(errMessage);
   });
 });
