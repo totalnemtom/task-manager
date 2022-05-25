@@ -2,8 +2,10 @@ const TaskController = require("./tasks");
 const TaskSchema = require("../models/task");
 const httpMocks = require("node-mocks-http");
 const newTask = require("./mock-data/new-task.json");
+const taskArray = require("./mock-data/task-array.json");
 
 TaskSchema.create = jest.fn();
+TaskSchema.find = jest.fn();
 
 let req, res, next;
 beforeEach(() => {
@@ -11,8 +13,6 @@ beforeEach(() => {
   res = httpMocks.createResponse();
   next = jest.fn();
 });
-
-//describe("TaskSchema.getAllTasks", async () => {});
 
 describe("TaskController.createTask", () => {
   beforeEach(() => {
@@ -43,5 +43,18 @@ describe("TaskController.createTask", () => {
     TaskSchema.create.mockReturnValue(rejectedPromise);
     await TaskController.createTask(req, res, next);
     expect(next).toBeCalledWith(errMessage);
+  });
+});
+
+describe("TaskController.getAllTask", () => {
+  it("should return 200 status code", () => {
+    TaskController.getAllTasks(req, res, next);
+    expect(res.statusCode).toBe(200);
+  });
+  it("should return array in response", async () => {
+    TaskSchema.find.mockReturnValue(taskArray);
+    await TaskController.getAllTasks(req, res, next);
+    console.log(res._isEndCalled());
+    expect(res.length).toBe(taskArray.length);
   });
 });
